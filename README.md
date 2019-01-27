@@ -1,2 +1,2 @@
 # StealthGame_FC
-复习一周目简单多了
+在复习过CoopGame后,复习一周目StealthGame简单多了
