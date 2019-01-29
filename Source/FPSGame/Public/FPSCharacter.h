@@ -12,6 +12,7 @@ class UCameraComponent;
 class AFPSProjectile;
 class USoundBase;
 class UAnimSequence;
+class UPawnNoiseEmitterComponent;
 
 
 UCLASS()
@@ -50,6 +51,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 		bool bIsCarringObjective;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+		UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
 protected:
 
