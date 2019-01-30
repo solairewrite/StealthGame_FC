@@ -49,7 +49,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 		UAnimSequence* FireAnimation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Gameplay")
 		bool bIsCarringObjective;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
@@ -60,6 +60,9 @@ protected:
 	/** Fires a projectile. */
 	void Fire();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerFire();
+
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -69,6 +72,9 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
 public:
+
+	virtual void Tick(float DeltaTime) override;
+
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1PComponent; }
 

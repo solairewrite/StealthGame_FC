@@ -5,6 +5,7 @@
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet//GameplayStatics.h"
+#include "Public/FPSGameState.h"
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -14,13 +15,16 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	// 设置GameState类
+	GameStateClass = AFPSGameState::StaticClass();
 }
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
 	if (InstigatorPawn)
 	{
-		InstigatorPawn->DisableInput(nullptr);
+		//InstigatorPawn->DisableInput(nullptr);
 		if (SpectatingViewpointClass)
 		{
 			// 根据Class获取所有的Actor
@@ -29,18 +33,31 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 			if (ReturnedActors.Num() > 0)
 			{
 				AActor* NewViewTarget = ReturnedActors[0];
-				APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
-				if (PC)
+				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
 				{
-					// 设置视角
-					PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+					APlayerController* PC = It->Get();
+					if (PC)
+					{
+						PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+					}
 				}
+				//APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
+				//if (PC)
+				//{
+				//	// 设置视角
+				//	PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+				//}
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("SpectatingViewpointClass是空指针,请在GameMode中设置"));
+			UE_LOG(LogTemp, Warning, TEXT("SpectatingViewpoint是空指针,请在GameMode中设置"));
 		}
 	}
-	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
+	//OnMissionCompleted(InstigatorPawn, bMissionSuccess);
+	AFPSGameState* GS = GetGameState<AFPSGameState>();
+	if (GS)
+	{
+		GS->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	}
 }
